@@ -1,7 +1,11 @@
 package com.example.dream_player
 
+import android.annotation.SuppressLint
+import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.provider.MediaStore
+import androidx.annotation.RequiresApi
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.dream_player.adapters.TrackAdapter
@@ -9,11 +13,32 @@ import com.example.dream_player.models.Track
 
 class MainActivity : AppCompatActivity() {
 
+    @RequiresApi(Build.VERSION_CODES.R)
+    @SuppressLint("Recycle")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        val fakeEmails = generateFakeEmails()
-        setUpEmailRecyclerView(fakeEmails)
+
+        val selection = MediaStore.Audio.Media.IS_MUSIC + " != 0"
+
+        val projection = arrayOf<String>(
+            MediaStore.Audio.Media.DATA,
+            MediaStore.Audio.Media.TITLE,
+            MediaStore.Audio.Media.ARTIST,
+            MediaStore.Audio.Media.DURATION
+        )
+
+        val cursor = applicationContext.contentResolver.query(
+            MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
+            projection, selection, null,null)
+
+        val songs = mutableListOf<Track>()
+        if (cursor != null) {
+            while(cursor.moveToNext()){
+                songs.add(Track(cursor.getString(0), cursor.getString(1), cursor.getString(2), cursor.getString(3)))
+            }
+        }
+        setUpEmailRecyclerView(songs)
     }
 
     private fun setUpEmailRecyclerView(tracks: List<Track>) {
@@ -22,30 +47,5 @@ class MainActivity : AppCompatActivity() {
         val recyclerAdapter = TrackAdapter(tracks, this)
         emailRecyclerView.layoutManager = layoutManager
         emailRecyclerView.adapter = recyclerAdapter
-    }
-
-    private fun generateFakeEmails(): List<Track> {
-        val titles = listOf(
-            "Hot dogs $1 only!",
-            "Dev.to beats Medium.",
-            "We have updated our privacy :/",
-            "Nick moves to New Zealand")
-        val descriptions = listOf(
-            "This is truly amazing, unexpected...",
-            "Yes, yes, yes! It is happening!",
-            "Follow our blog to learn more...",
-            "Well, it supposed to happen...")
-        val times = listOf(
-            "13:42",
-            "16:16",
-            "12:34",
-            "20:20")
-        val emailList = mutableListOf<Track>()
-        for (i in 0..100) {
-            emailList.add(
-                Track(titles.random(), descriptions.random(), times.random())
-            )
-        }
-        return emailList
     }
 }

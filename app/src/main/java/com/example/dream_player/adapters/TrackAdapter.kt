@@ -12,9 +12,9 @@ import com.example.dream_player.models.Track
 class TrackAdapter(private val trackList: List<Track>, private val context: Context) : RecyclerView.Adapter<TrackAdapter.EmailViewHolder>() {
 
     override fun onBindViewHolder(emailViewHolder: EmailViewHolder, index: Int) {
-        emailViewHolder.nameTextView.text = trackList[index].name
-        emailViewHolder.artistTextView.text = trackList[index].artist
-        emailViewHolder.durationTextView.text = trackList[index].t_duration
+        emailViewHolder.nameTextView.text = trackList[index].artist.plus(" - ").plus(trackList[index].name)
+        emailViewHolder.artistTextView.text = trackList[index].path
+        emailViewHolder.durationTextView.text = trackList[index].duration
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): EmailViewHolder {
