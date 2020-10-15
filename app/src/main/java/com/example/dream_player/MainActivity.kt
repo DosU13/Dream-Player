@@ -43,7 +43,7 @@ class MainActivity : AppCompatActivity() {
 
     private fun setUpEmailRecyclerView(tracks: List<Track>) {
         val layoutManager = LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
-        val emailRecyclerView = findViewById<RecyclerView>(R.id.email_recycler_view)
+        val emailRecyclerView = findViewById<RecyclerView>(R.id.track_recycler_view)
         val recyclerAdapter = TrackAdapter(tracks, this)
         emailRecyclerView.layoutManager = layoutManager
         emailRecyclerView.adapter = recyclerAdapter
