@@ -26,7 +26,7 @@ class TrackAdapter(private val trackList: List<Track>, private val context: Cont
         return trackList.size
     }
 
-    inner class TrackViewHolder(view: View) : RecyclerView.ViewHolder(view) {
+    inner class TrackViewHolder(view: View) : RecyclerView.ViewHolder(view){
         val nameTextView: TextView = view.findViewById(R.id.track_name)
         val artistTextView: TextView = view.findViewById(R.id.track_artist)
         val durationTextView: TextView = view.findViewById(R.id.track_duration)
