@@ -1,10 +1,10 @@
 package com.example.dreamplayer
 
 class MusicFiles (
-private val path : String,
-private val title : String,
-private val artist : String,
-private val album : String,
-private val duration : String
+val path : String,
+val title : String,
+val artist : String,
+val album : String,
+val duration : String
 )
 

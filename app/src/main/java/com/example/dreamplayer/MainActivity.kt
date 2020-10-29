@@ -18,13 +18,12 @@ import java.util.jar.Manifest
 
 class MainActivity : AppCompatActivity() {
     val REQUEST_CODE = 1
-    var musicFiles = ArrayList<MusicFiles>()
+    companion object{ var musicFiles = ArrayList<MusicFiles>()}
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         permission()
-        initViewPager();
     }
 
     private fun permission(){
@@ -33,7 +32,8 @@ class MainActivity : AppCompatActivity() {
             ActivityCompat.requestPermissions(this@MainActivity, arrayOf(android.Manifest.permission.WRITE_EXTERNAL_STORAGE), REQUEST_CODE)
         }
         else {
-            Toast.makeText(this, "Permission Granted!" , Toast.LENGTH_SHORT).show()
+            musicFiles = getAllAudio(this)
+            initViewPager()
         }
     }
 
@@ -41,8 +41,8 @@ class MainActivity : AppCompatActivity() {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         if (requestCode == REQUEST_CODE){
             if (grantResults[0] == PackageManager.PERMISSION_GRANTED){
-                Toast.makeText(this, "Permission Granted!" , Toast.LENGTH_SHORT).show()
                 musicFiles = getAllAudio(this)
+                initViewPager()
             }
             else{
                 ActivityCompat.requestPermissions(this@MainActivity, arrayOf(android.Manifest.permission.WRITE_EXTERNAL_STORAGE), REQUEST_CODE)
@@ -83,7 +83,7 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    fun getAllAudio(context : Context) : ArrayList<MusicFiles> {
+    private fun getAllAudio(context : Context) : ArrayList<MusicFiles> {
         val tempAudioList = ArrayList<MusicFiles>()
         val uri = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI
         val projection = arrayOf(
@@ -104,8 +104,6 @@ class MainActivity : AppCompatActivity() {
                 val artist = cursor.getString(4)
 
                 val musicFiles = MusicFiles(path, title, artist, album, duration)
-                Log.e("Path : $path", "Album : $album")
-                Toast.makeText(this, "Title : $album", Toast.LENGTH_SHORT).show()
                 tempAudioList.add(musicFiles)
             }
             cursor.close()
