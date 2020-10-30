@@ -1,6 +1,10 @@
 package com.example.dreamplayer.activity
 
+import android.content.Context
+import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.graphics.Color
+import android.graphics.drawable.GradientDrawable
 import android.media.MediaMetadataRetriever
 import android.media.MediaPlayer
 import android.net.Uri
@@ -9,10 +13,10 @@ import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.view.View
-import android.widget.ImageView
-import android.widget.SeekBar
-import android.widget.TextView
-import android.widget.Toast
+import android.view.animation.Animation
+import android.view.animation.AnimationUtils
+import android.widget.*
+import androidx.palette.graphics.Palette
 import com.bumptech.glide.Glide
 import com.example.dreamplayer.R
 import com.example.dreamplayer.activity.MainActivity.Companion.musicFiles
@@ -20,7 +24,7 @@ import com.example.dreamplayer.model.MusicFiles
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import kotlinx.android.synthetic.main.activity_player.*
 
-class PlayerActivity : AppCompatActivity() , SeekBar.OnSeekBarChangeListener{
+class PlayerActivity : AppCompatActivity() , MediaPlayer.OnCompletionListener{
     private var position = -1
     private lateinit var songName : TextView
     private lateinit var artistName : TextView
@@ -52,7 +56,22 @@ class PlayerActivity : AppCompatActivity() , SeekBar.OnSeekBarChangeListener{
         getIntentMethod()
         songName.text = listSongs[position].title
         song_artist.text = listSongs[position].artist
-        seekBar.setOnSeekBarChangeListener(this)
+        mediaPlayer.setOnCompletionListener(this)
+        seekBar.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener{
+            override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
+                if (isInitialized && fromUser){
+                    mediaPlayer.seekTo(progress * 1000)
+                }
+            }
+
+            override fun onStartTrackingTouch(p0: SeekBar?) {
+
+            }
+
+            override fun onStopTrackingTouch(p0: SeekBar?) {
+
+            }
+        })
 
         handler = Handler(Looper.getMainLooper())
         this@PlayerActivity.runOnUiThread(runnable {
@@ -99,7 +118,8 @@ class PlayerActivity : AppCompatActivity() , SeekBar.OnSeekBarChangeListener{
                 }
                 handler.postDelayed(this, 1000)
             })
-            playPauseBtn.setImageResource(R.drawable.ic_baseline_pause_24)
+            mediaPlayer.setOnCompletionListener(this)
+            playPauseBtn.setBackgroundResource(R.drawable.ic_baseline_pause_24)
             mediaPlayer.start()
         }
         else{
@@ -119,7 +139,8 @@ class PlayerActivity : AppCompatActivity() , SeekBar.OnSeekBarChangeListener{
                 }
                 handler.postDelayed(this, 1000)
             })
-            playPauseBtn.setImageResource(R.drawable.ic_baseline_play_arrow_24)
+            mediaPlayer.setOnCompletionListener(this)
+            playPauseBtn.setBackgroundResource(R.drawable.ic_baseline_play_arrow_24)
         }
     }
 
@@ -151,7 +172,8 @@ class PlayerActivity : AppCompatActivity() , SeekBar.OnSeekBarChangeListener{
                 }
                 handler.postDelayed(this, 1000)
             })
-            playPauseBtn.setImageResource(R.drawable.ic_baseline_pause_24)
+            mediaPlayer.setOnCompletionListener(this)
+            playPauseBtn.setBackgroundResource(R.drawable.ic_baseline_pause_24)
             mediaPlayer.start()
         }
         else{
@@ -172,7 +194,8 @@ class PlayerActivity : AppCompatActivity() , SeekBar.OnSeekBarChangeListener{
                 }
                 handler.postDelayed(this, 1000)
             })
-            playPauseBtn.setImageResource(R.drawable.ic_baseline_play_arrow_24)
+            mediaPlayer.setOnCompletionListener(this)
+            playPauseBtn.setBackgroundResource(R.drawable.ic_baseline_play_arrow_24)
         }
     }
 
@@ -270,32 +293,94 @@ class PlayerActivity : AppCompatActivity() , SeekBar.OnSeekBarChangeListener{
         val durationTotalInt = Integer.parseInt(listSongs[position].duration) / 1000
         durationTotal.text = formattedTime(durationTotalInt)
         val art : ByteArray? = retriever.embeddedPicture
+        var bitmap : Bitmap?
         if (art != null){
-            Glide.with(this).asBitmap().load(art).into(coverArt)
-            val bitmap = BitmapFactory.decodeByteArray(art, 0, art.size)
+            bitmap = BitmapFactory.decodeByteArray(art, 0, art.size)
+            imageAnimation(this, coverArt, bitmap)
+            Palette.from(bitmap).generate(Palette.PaletteAsyncListener {
+                val swatch = it?.dominantSwatch
+                if(swatch!=null){
+                    val gradient = findViewById<ImageView>(R.id.imageViewGradient)
+                    val mContainer = findViewById<RelativeLayout>(R.id.mContainer)
+                    gradient.setBackgroundResource(R.drawable.gradient_bg)
+                    mContainer.setBackgroundResource(R.drawable.main_bg)
+                    val gradientDrawable = GradientDrawable(GradientDrawable.Orientation.BOTTOM_TOP,
+                    intArrayOf(swatch.rgb, 0x00000000))
+                    gradient.background = gradientDrawable
+                    val gradientDrawableBg = GradientDrawable(GradientDrawable.Orientation.BOTTOM_TOP,
+                    intArrayOf(swatch.rgb, swatch.rgb))
+                    mContainer.background = gradientDrawableBg
+                    songName.setTextColor(swatch.titleTextColor)
+                    artistName.setTextColor(swatch.bodyTextColor)
+                }
+                else{
+                    val gradient = findViewById<ImageView>(R.id.imageViewGradient)
+                    val mContainer = findViewById<RelativeLayout>(R.id.mContainer)
+                    gradient.setBackgroundResource(R.drawable.gradient_bg)
+                    mContainer.setBackgroundResource(R.drawable.main_bg)
+                    val gradientDrawable = GradientDrawable(GradientDrawable.Orientation.BOTTOM_TOP,
+                        intArrayOf(0xff000000.toInt(), 0x00000000))
+                    gradient.background = gradientDrawable
+                    val gradientDrawableBg = GradientDrawable(GradientDrawable.Orientation.BOTTOM_TOP,
+                        intArrayOf(0xff000000.toInt(), 0xff000000.toInt()))
+                    mContainer.background = gradientDrawableBg
+                    songName.setTextColor(Color.WHITE)
+                    artistName.setTextColor(Color.DKGRAY)
+                }
+            })
         }
         else {
             Glide.with(this).asBitmap().load(R.drawable.ic_launcher_background).into(coverArt)
+            val gradient = findViewById<ImageView>(R.id.imageViewGradient)
+            val mContainer = findViewById<RelativeLayout>(R.id.mContainer)
+            gradient.setBackgroundResource(R.drawable.gradient_bg)
+            mContainer.setBackgroundResource(R.drawable.main_bg)
+            songName.setTextColor(Color.WHITE)
+            artistName.setTextColor(Color.DKGRAY)
         }
     }
 
-    override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
-        if (isInitialized && fromUser){
-            mediaPlayer.seekTo(progress * 1000)
-        }
-    }
+    private fun imageAnimation(context: Context, imageView: ImageView, bitmap: Bitmap) {
+        val animOut = AnimationUtils.loadAnimation(context, android.R.anim.fade_out)
+        val animIn = AnimationUtils.loadAnimation(context, android.R.anim.fade_in)
+        animOut.setAnimationListener(object : Animation.AnimationListener{
+            override fun onAnimationRepeat(p0: Animation?) {
+            }
 
-    override fun onStartTrackingTouch(p0: SeekBar?) {
+            override fun onAnimationEnd(p0: Animation?) {
+                Glide.with(context).load(bitmap).into(imageView)
+                animIn.setAnimationListener(object : Animation.AnimationListener {
+                    override fun onAnimationRepeat(p0: Animation?) {
+                    }
 
-    }
+                    override fun onAnimationEnd(p0: Animation?) {
+                    }
 
-    override fun onStopTrackingTouch(p0: SeekBar?) {
+                    override fun onAnimationStart(p0: Animation?) {
+                    }
 
+                })
+                imageView.startAnimation(animIn)
+            }
+
+            override fun onAnimationStart(p0: Animation?) {
+            }
+        })
+        imageView.startAnimation(animOut)
     }
 
     private fun runnable(body: Runnable.(Runnable)->Unit) = object : Runnable{
         override fun run() {
             this.body(this)
+        }
+    }
+
+    override fun onCompletion(p0: MediaPlayer?) {
+        nextBtnClicked()
+        if (isInitialized){
+            mediaPlayer = MediaPlayer.create(applicationContext, uri)
+            mediaPlayer.start()
+            mediaPlayer.setOnCompletionListener(this)
         }
     }
 }
