@@ -1,8 +1,7 @@
-package com.example.dreamplayer
+package com.example.dreamplayer.adapter
 
 import android.content.Context
 import android.media.MediaMetadataRetriever
-import android.net.Uri
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -10,10 +9,13 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
+import com.example.dreamplayer.R
+import com.example.dreamplayer.model.MusicFiles
 
-class MusicAdapter(private val mContext: Context?, private val mFiles: ArrayList<MusicFiles>) : RecyclerView.Adapter<MusicAdapter.MyViewHolder>() {
+class MusicAdapter(private val mContext: Context?, private val mFiles: ArrayList<MusicFiles>, private val cellClickListener: CellClickListener) :
+    RecyclerView.Adapter<MusicAdapter.MyViewHolder>(){
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MusicAdapter.MyViewHolder {
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MyViewHolder {
         val view = LayoutInflater.from(mContext).inflate(R.layout.music_items, parent, false)
         return MyViewHolder(view)
     }
@@ -29,15 +31,18 @@ class MusicAdapter(private val mContext: Context?, private val mFiles: ArrayList
                     .into(holder.album_art)
             }
         }
+        val musicFiles = mFiles[position]
+        holder.itemView.setOnClickListener{
+            cellClickListener.onCellClickListener(mContext, position)
+        }
     }
 
     override fun getItemCount(): Int {
         return mFiles.size
     }
 
-    class MyViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        val file_name = itemView.findViewById<TextView>(R.id.music_file_name)
-        val album_art = itemView.findViewById<ImageView>(R.id.music_img)
+    interface CellClickListener {
+        fun onCellClickListener(mContext: Context?, position: Int)
     }
 
     private fun getAlbumArt(uri: String): ByteArray? {
@@ -46,5 +51,10 @@ class MusicAdapter(private val mContext: Context?, private val mFiles: ArrayList
         val art = retriever.embeddedPicture
         retriever.release()
         return art
+    }
+
+    class MyViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+        val file_name = itemView.findViewById<TextView>(R.id.music_file_name)
+        val album_art = itemView.findViewById<ImageView>(R.id.music_img)
     }
 }

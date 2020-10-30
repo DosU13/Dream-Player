@@ -1,4 +1,4 @@
-package com.example.dreamplayer
+package com.example.dreamplayer.model
 
 class MusicFiles (
 val path : String,

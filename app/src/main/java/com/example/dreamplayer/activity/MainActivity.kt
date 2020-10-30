@@ -1,22 +1,23 @@
-package com.example.dreamplayer
+package com.example.dreamplayer.activity
 
 import android.content.Context
 import android.content.pm.PackageManager
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.provider.MediaStore
-import android.util.Log
-import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentPagerAdapter
 import androidx.viewpager.widget.ViewPager
+import com.example.dreamplayer.fragment.AlbumFragment
+import com.example.dreamplayer.R
+import com.example.dreamplayer.fragment.SongsFragment
+import com.example.dreamplayer.model.MusicFiles
 import com.google.android.material.tabs.TabLayout
-import java.util.jar.Manifest
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : AppCompatActivity(){
     val REQUEST_CODE = 1
     companion object{ var musicFiles = ArrayList<MusicFiles>()}
 
@@ -58,7 +59,6 @@ class MainActivity : AppCompatActivity() {
         viewPagerAdapter.addFragments(AlbumFragment(), "Albums")
         viewPager.adapter = viewPagerAdapter
         tabLayout.setupWithViewPager(viewPager)
-
     }
 
     class ViewPagerAdapter(fm: FragmentManager) : FragmentPagerAdapter(fm) {
@@ -103,7 +103,13 @@ class MainActivity : AppCompatActivity() {
                 val path = cursor.getString(3)
                 val artist = cursor.getString(4)
 
-                val musicFiles = MusicFiles(path, title, artist, album, duration)
+                val musicFiles = MusicFiles(
+                    path,
+                    title,
+                    artist,
+                    album,
+                    duration
+                )
                 tempAudioList.add(musicFiles)
             }
             cursor.close()
