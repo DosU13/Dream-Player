@@ -19,7 +19,11 @@ import com.google.android.material.tabs.TabLayout
 
 class MainActivity : AppCompatActivity(){
     val REQUEST_CODE = 1
-    companion object{ var musicFiles = ArrayList<MusicFiles>()}
+    companion object{
+        var musicFiles = ArrayList<MusicFiles>()
+        var shuffleBoolean = false
+        var repeatBoolean = false
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -91,7 +95,8 @@ class MainActivity : AppCompatActivity(){
             MediaStore.Audio.Media.TITLE,
             MediaStore.Audio.Media.DURATION,
             MediaStore.Audio.Media.DATA,
-            MediaStore.Audio.Media.ARTIST
+            MediaStore.Audio.Media.ARTIST,
+            MediaStore.Audio.Media._ID
         )
 
         val cursor = context.contentResolver.query(uri, projection, null, null, null)
@@ -102,13 +107,15 @@ class MainActivity : AppCompatActivity(){
                 val duration = cursor.getString(2)
                 val path = cursor.getString(3)
                 val artist = cursor.getString(4)
+                val id = cursor.getString(5)
 
                 val musicFiles = MusicFiles(
                     path,
                     title,
                     artist,
                     album,
-                    duration
+                    duration,
+                    id
                 )
                 tempAudioList.add(musicFiles)
             }

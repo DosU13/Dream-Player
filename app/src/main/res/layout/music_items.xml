@@ -11,6 +11,7 @@
         android:layout_width="60dp"
         android:layout_height="60dp"
         android:id="@+id/music_img"
+        android:src="@mipmap/ic_launcher_round"
         android:padding="5dp"/>
 
     <TextView
@@ -22,6 +23,15 @@
         android:layout_marginLeft="10dp"
         android:layout_centerVertical="true"
         android:textColor="@color/colorAccent"
+        android:layout_toStartOf="@+id/menu_more"
         android:id="@+id/music_file_name"/>
+
+    <ImageView
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:id="@+id/menu_more"
+        android:src="@drawable/ic_baseline_more_vert_24"
+        android:layout_alignParentEnd="true"
+        android:padding="10dp"/>
 
 </RelativeLayout>
