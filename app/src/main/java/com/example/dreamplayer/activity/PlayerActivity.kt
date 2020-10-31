@@ -1,6 +1,9 @@
 package com.example.dreamplayer.activity
 
+import android.content.ComponentName
 import android.content.Context
+import android.content.Intent
+import android.content.ServiceConnection
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.Color
@@ -11,6 +14,7 @@ import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.Handler
+import android.os.IBinder
 import android.os.Looper
 import android.view.View
 import android.view.animation.Animation
@@ -18,6 +22,7 @@ import android.view.animation.AnimationUtils
 import android.widget.*
 import androidx.palette.graphics.Palette
 import com.bumptech.glide.Glide
+import com.example.dreamplayer.MusicService
 import com.example.dreamplayer.R
 import com.example.dreamplayer.activity.MainActivity.Companion.musicFiles
 import com.example.dreamplayer.activity.MainActivity.Companion.repeatBoolean
@@ -29,7 +34,7 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton
 import kotlinx.android.synthetic.main.activity_player.*
 import kotlin.random.Random
 
-class PlayerActivity : AppCompatActivity() , MediaPlayer.OnCompletionListener{
+class PlayerActivity : AppCompatActivity() , MediaPlayer.OnCompletionListener, ActionPlaying, ServiceConnection{
     private var position = -1
     private lateinit var songName : TextView
     private lateinit var artistName : TextView
@@ -46,6 +51,7 @@ class PlayerActivity : AppCompatActivity() , MediaPlayer.OnCompletionListener{
     private lateinit var playThread : Thread
     private lateinit var prevThread : Thread
     private lateinit var nextThread: Thread
+    private var musicService: MusicService? = null
     companion object {
         var listSongs = ArrayList<MusicFiles>()
         lateinit var uri : Uri
@@ -115,10 +121,17 @@ class PlayerActivity : AppCompatActivity() , MediaPlayer.OnCompletionListener{
     }
 
     override fun onResume() {
+        val intent = Intent(this, MusicService::class.java)
+        bindService(intent, this, Context.BIND_AUTO_CREATE)
         playThreadBtn()
         prevThreadBtn()
         nextThreadBtn()
         super.onResume()
+    }
+
+    override fun onPause() {
+        super.onPause()
+        unbindService(this)
     }
 
     private fun nextThreadBtn() {
@@ -130,7 +143,7 @@ class PlayerActivity : AppCompatActivity() , MediaPlayer.OnCompletionListener{
         nextThread.start()
     }
 
-    private fun nextBtnClicked() {
+    override fun nextBtnClicked() {
         if (mediaPlayer.isPlaying){
             mediaPlayer.stop()
             mediaPlayer.release()
@@ -188,7 +201,7 @@ class PlayerActivity : AppCompatActivity() , MediaPlayer.OnCompletionListener{
         prevThread.start()
     }
 
-    private fun prevBtnClicked() {
+    override fun prevBtnClicked() {
         if (mediaPlayer.isPlaying){
             mediaPlayer.stop()
             mediaPlayer.release()
@@ -253,7 +266,7 @@ class PlayerActivity : AppCompatActivity() , MediaPlayer.OnCompletionListener{
         playThread.start()
     }
 
-    private fun playPauseBtnClicked() {
+    override fun playPauseBtnClicked() {
         if (mediaPlayer.isPlaying){
             playPauseBtn.setImageResource(R.drawable.ic_baseline_play_arrow_24)
             mediaPlayer.pause()
@@ -431,5 +444,15 @@ class PlayerActivity : AppCompatActivity() , MediaPlayer.OnCompletionListener{
             mediaPlayer.start()
             mediaPlayer.setOnCompletionListener(this)
         }
+    }
+
+    override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
+        val myBinder = service as MusicService.MyBinder
+        musicService = myBinder.service
+        Toast.makeText(this, "Connected$musicService", Toast.LENGTH_SHORT).show()
+    }
+
+    override fun onServiceDisconnected(p0: ComponentName?) {
+        musicService = null
     }
 }
