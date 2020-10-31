@@ -14,8 +14,7 @@ import com.example.dreamplayer.adapter.MusicAdapter
 import com.example.dreamplayer.R
 import com.example.dreamplayer.activity.MainActivity.Companion.musicFiles
 import com.example.dreamplayer.activity.PlayerActivity
-class SongsFragment : Fragment() ,
-    MusicAdapter.CellClickListener {
+class SongsFragment : Fragment() , CellClickListener {
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val view  = inflater.inflate(R.layout.fragment_songs, container, false)
         val recyclerView = view.findViewById<RecyclerView>(R.id.recyclerView)

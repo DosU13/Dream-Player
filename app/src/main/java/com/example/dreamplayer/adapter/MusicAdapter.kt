@@ -15,6 +15,7 @@ import android.widget.Toast
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.dreamplayer.R
+import com.example.dreamplayer.fragment.CellClickListener
 import com.example.dreamplayer.model.MusicFiles
 import com.google.android.material.snackbar.Snackbar
 import java.io.File
@@ -38,7 +39,6 @@ class MusicAdapter(private val mContext: Context?, private val mFiles: ArrayList
                     .into(holder.albumArt)
             }
         }
-        val musicFiles = mFiles[position]
         holder.itemView.setOnClickListener{
             cellClickListener.onCellClickListener(mContext, position)
         }
@@ -78,10 +78,6 @@ class MusicAdapter(private val mContext: Context?, private val mFiles: ArrayList
 
     override fun getItemCount(): Int {
         return mFiles.size
-    }
-
-    interface CellClickListener {
-        fun onCellClickListener(mContext: Context?, position: Int)
     }
 
     private fun getAlbumArt(uri: String): ByteArray? {
