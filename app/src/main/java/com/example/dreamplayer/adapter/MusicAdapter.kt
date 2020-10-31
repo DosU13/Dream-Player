@@ -17,13 +17,19 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.dreamplayer.R
 import com.example.dreamplayer.activity.PlayerActivity
-import com.example.dreamplayer.fragment.CellClickListener
 import com.example.dreamplayer.model.MusicFiles
 import com.google.android.material.snackbar.Snackbar
 import java.io.File
 
-class MusicAdapter(private val mContext: Context?, private val mFiles: ArrayList<MusicFiles>) :
+class MusicAdapter(private val mContext: Context?, private val mFilesVal: ArrayList<MusicFiles>) :
     RecyclerView.Adapter<MusicAdapter.MyViewHolder>(){
+    companion object{
+        lateinit var mFiles : ArrayList<MusicFiles>
+    }
+
+    init {
+        mFiles = mFilesVal
+    }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MyViewHolder {
         val view = LayoutInflater.from(mContext).inflate(R.layout.music_items, parent, false)
@@ -90,6 +96,12 @@ class MusicAdapter(private val mContext: Context?, private val mFiles: ArrayList
         val art = retriever.embeddedPicture
         retriever.release()
         return art
+    }
+
+    fun updateList(musicFilesArrayList: ArrayList<MusicFiles>){
+        mFiles = ArrayList<MusicFiles>()
+        mFiles.addAll(musicFilesArrayList)
+        notifyDataSetChanged()
     }
 
     class MyViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {

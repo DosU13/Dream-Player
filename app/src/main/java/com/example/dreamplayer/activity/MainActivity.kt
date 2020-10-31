@@ -1,10 +1,14 @@
 package com.example.dreamplayer.activity
 
 import android.content.Context
+import android.content.SharedPreferences
 import android.content.pm.PackageManager
 import android.os.Bundle
 import android.provider.MediaStore
+import android.view.Menu
+import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.SearchView
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
@@ -17,8 +21,9 @@ import com.example.dreamplayer.fragment.SongsFragment
 import com.example.dreamplayer.model.MusicFiles
 import com.google.android.material.tabs.TabLayout
 
-class MainActivity : AppCompatActivity(){
+class MainActivity : AppCompatActivity(), SearchView.OnQueryTextListener{
     val REQUEST_CODE = 1
+    val MY_SORT_PREF = "SortOrder"
     companion object{
         var musicFiles = ArrayList<MusicFiles>()
         var shuffleBoolean = false
@@ -89,9 +94,18 @@ class MainActivity : AppCompatActivity(){
     }
 
     private fun getAllAudio(context : Context) : ArrayList<MusicFiles> {
+        val preferences = getSharedPreferences(MY_SORT_PREF, Context.MODE_PRIVATE)
+        val sortOrder = preferences.getString("sorting", "sortByDate")
         val duplicate = ArrayList<String>()
+        albums.clear()
         val tempAudioList = ArrayList<MusicFiles>()
+        var order = MediaStore.MediaColumns.DATE_ADDED + " ASC"
         val uri = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI
+        when(sortOrder){
+            "sortByName"-> order = MediaStore.MediaColumns.DISPLAY_NAME + " ASC"
+            "sortByDate"-> order = MediaStore.MediaColumns.DATE_ADDED + " ASC"
+            "sortBySize"-> order = MediaStore.MediaColumns.SIZE + " DESC"
+        }
         val projection = arrayOf(
             MediaStore.Audio.Media.ALBUM,
             MediaStore.Audio.Media.TITLE,
@@ -100,8 +114,7 @@ class MainActivity : AppCompatActivity(){
             MediaStore.Audio.Media.ARTIST,
             MediaStore.Audio.Media._ID
         )
-
-        val cursor = context.contentResolver.query(uri, projection, null, null, null)
+        val cursor = context.contentResolver.query(uri, projection, null, null, order)
         if (cursor!=null){
             while(cursor.moveToNext()){
                 val album = cursor.getString(0)
@@ -128,5 +141,50 @@ class MainActivity : AppCompatActivity(){
             cursor.close()
         }
         return tempAudioList
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        menuInflater.inflate(R.menu.search, menu)
+        val menuItem = menu?.findItem(R.id.search_option)
+        val searchView : SearchView = menuItem?.actionView as SearchView
+        searchView.setOnQueryTextListener(this)
+        return super.onCreateOptionsMenu(menu)
+    }
+
+    override fun onQueryTextSubmit(query: String?): Boolean {
+        return true
+    }
+
+    override fun onQueryTextChange(newText: String?): Boolean {
+        val userInput = newText?.toLowerCase()
+        val myFiles = ArrayList<MusicFiles>()
+        for (song : MusicFiles in musicFiles){
+            if (song.title.toLowerCase().contains(userInput.toString()) ||
+                song.artist.toLowerCase().contains(userInput.toString()) ||
+                song.album.toLowerCase().contains(userInput.toString())){
+                myFiles.add(song)
+            }
+        }
+        SongsFragment.musicAdapter.updateList(myFiles)
+        return true
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        val editor = getSharedPreferences(MY_SORT_PREF, Context.MODE_PRIVATE).edit()
+        when (item.itemId){
+            R.id.by_name -> {
+                editor.putString("sorting", "sortByName")
+                editor.apply()
+                this.recreate()}
+            R.id.by_date -> {
+                editor.putString("sorting", "sortByDate")
+                editor.apply()
+                this.recreate()}
+            R.id.by_size -> {
+                editor.putString("sorting", "sortBySize")
+                editor.apply()
+                this.recreate()}
+        }
+        return super.onOptionsItemSelected(item)
     }
 }

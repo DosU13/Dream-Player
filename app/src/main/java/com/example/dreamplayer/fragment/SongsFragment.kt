@@ -14,17 +14,19 @@ import com.example.dreamplayer.adapter.MusicAdapter
 import com.example.dreamplayer.R
 import com.example.dreamplayer.activity.MainActivity.Companion.musicFiles
 import com.example.dreamplayer.activity.PlayerActivity
+import com.example.dreamplayer.adapter.MusicAdapter.Companion.mFiles
+
 class SongsFragment : Fragment() {
+    companion object{
+        lateinit var musicAdapter: MusicAdapter
+    }
+
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val view  = inflater.inflate(R.layout.fragment_songs, container, false)
         val recyclerView = view.findViewById<RecyclerView>(R.id.recyclerView)
         recyclerView.setHasFixedSize(true)
         if (musicFiles.size >= 1) {
-            val musicAdapter =
-                MusicAdapter(
-                    context,
-                    musicFiles
-                )
+            musicAdapter = MusicAdapter(context, musicFiles)
             recyclerView.adapter = musicAdapter
             recyclerView.layoutManager = LinearLayoutManager(context, RecyclerView.VERTICAL, false)
         }

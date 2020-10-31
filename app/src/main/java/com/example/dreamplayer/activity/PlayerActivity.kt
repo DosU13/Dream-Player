@@ -23,6 +23,7 @@ import com.example.dreamplayer.activity.MainActivity.Companion.musicFiles
 import com.example.dreamplayer.activity.MainActivity.Companion.repeatBoolean
 import com.example.dreamplayer.activity.MainActivity.Companion.shuffleBoolean
 import com.example.dreamplayer.adapter.AlbumDetailsAdapter.Companion.albumFiles
+import com.example.dreamplayer.adapter.MusicAdapter.Companion.mFiles
 import com.example.dreamplayer.model.MusicFiles
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import kotlinx.android.synthetic.main.activity_player.*
@@ -280,12 +281,10 @@ class PlayerActivity : AppCompatActivity() , MediaPlayer.OnCompletionListener{
     }
 
     private fun formattedTime(mCurrentPosition: Int): String {
-        var totalOut = ""
-        var totalNew = ""
         val seconds : String = (mCurrentPosition % 60).toString()
         val minutes : String = (mCurrentPosition / 60).toString()
-        totalOut = "$minutes:$seconds"
-        totalNew = "$minutes:0$seconds"
+        val totalOut = "$minutes:$seconds"
+        val totalNew = "$minutes:0$seconds"
         return if (seconds.length == 1){
             totalNew
         } else {
@@ -300,7 +299,7 @@ class PlayerActivity : AppCompatActivity() , MediaPlayer.OnCompletionListener{
             listSongs = albumFiles
         }
         else {
-            listSongs = musicFiles
+            listSongs = mFiles
         }
         playPauseBtn.setImageResource(R.drawable.ic_baseline_pause_24)
         uri = Uri.parse(listSongs[position].path)
