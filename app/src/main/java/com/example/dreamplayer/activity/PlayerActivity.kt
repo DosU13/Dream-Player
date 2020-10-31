@@ -22,6 +22,7 @@ import com.example.dreamplayer.R
 import com.example.dreamplayer.activity.MainActivity.Companion.musicFiles
 import com.example.dreamplayer.activity.MainActivity.Companion.repeatBoolean
 import com.example.dreamplayer.activity.MainActivity.Companion.shuffleBoolean
+import com.example.dreamplayer.adapter.AlbumDetailsAdapter.Companion.albumFiles
 import com.example.dreamplayer.model.MusicFiles
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import kotlinx.android.synthetic.main.activity_player.*
@@ -294,7 +295,13 @@ class PlayerActivity : AppCompatActivity() , MediaPlayer.OnCompletionListener{
 
     private fun getIntentMethod() {
         position = intent.getIntExtra("position", -1)
-        listSongs = musicFiles
+        val sender = intent.getStringExtra("sender")
+        if (sender != null && sender == "albumDetails"){
+            listSongs = albumFiles
+        }
+        else {
+            listSongs = musicFiles
+        }
         playPauseBtn.setImageResource(R.drawable.ic_baseline_pause_24)
         uri = Uri.parse(listSongs[position].path)
         if (isInitialized){

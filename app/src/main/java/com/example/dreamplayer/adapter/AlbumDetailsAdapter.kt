@@ -12,10 +12,18 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.dreamplayer.activity.AlbumDetails
 import com.example.dreamplayer.R
+import com.example.dreamplayer.activity.PlayerActivity
 import com.example.dreamplayer.model.MusicFiles
 
-class AlbumDetailsAdapter(private val mContext: Context?, private val albumFiles: ArrayList<MusicFiles>) :
+class AlbumDetailsAdapter(private val mContext: Context?, private val albumFilesVal: ArrayList<MusicFiles>) :
     RecyclerView.Adapter<AlbumDetailsAdapter.MyViewHolderAlbum>() {
+    companion object{
+        lateinit var albumFiles : ArrayList<MusicFiles>
+    }
+
+    init {
+        albumFiles = albumFilesVal
+    }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MyViewHolderAlbum {
         val view = LayoutInflater.from(mContext).inflate(R.layout.music_items, parent, false)
@@ -33,7 +41,12 @@ class AlbumDetailsAdapter(private val mContext: Context?, private val albumFiles
                     .into(holder.albumImage)
             }
         }
-
+        holder.itemView.setOnClickListener {
+            val intent = Intent(mContext, PlayerActivity::class.java)
+            intent.putExtra("sender", "albumDetails")
+            intent.putExtra("position", position)
+            mContext?.startActivity(intent)
+        }
     }
 
     override fun getItemCount(): Int {

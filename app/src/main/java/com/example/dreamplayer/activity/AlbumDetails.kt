@@ -21,7 +21,7 @@ class AlbumDetails : AppCompatActivity() {
         val albumPhoto = findViewById<ImageView>(R.id.album_album_photo)
         val albumName = intent.getStringExtra("albumName")
         var j = 0
-        for (i in 0..musicFiles.size){
+        for (i in 0 until musicFiles.size){
             if (albumName.equals(musicFiles[i].album)){
                 albumSongs.add(j, musicFiles[i])
                 j++
@@ -41,6 +41,7 @@ class AlbumDetails : AppCompatActivity() {
         if (albumSongs.size >= 1){
             val albumDetailsAdapter = AlbumDetailsAdapter(this, albumSongs)
             val recyclerView = findViewById<RecyclerView>(R.id.recyclerView)
+            recyclerView.adapter = albumDetailsAdapter
             recyclerView.layoutManager = LinearLayoutManager(this, RecyclerView.VERTICAL, false)
         }
     }
