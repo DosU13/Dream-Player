@@ -2,6 +2,7 @@ package com.example.dreamplayer.adapter
 
 import android.content.ContentUris
 import android.content.Context
+import android.content.Intent
 import android.media.MediaMetadataRetriever
 import android.provider.MediaStore
 import android.view.LayoutInflater
@@ -15,12 +16,13 @@ import android.widget.Toast
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.dreamplayer.R
+import com.example.dreamplayer.activity.PlayerActivity
 import com.example.dreamplayer.fragment.CellClickListener
 import com.example.dreamplayer.model.MusicFiles
 import com.google.android.material.snackbar.Snackbar
 import java.io.File
 
-class MusicAdapter(private val mContext: Context?, private val mFiles: ArrayList<MusicFiles>, private val cellClickListener: CellClickListener) :
+class MusicAdapter(private val mContext: Context?, private val mFiles: ArrayList<MusicFiles>) :
     RecyclerView.Adapter<MusicAdapter.MyViewHolder>(){
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MyViewHolder {
@@ -39,8 +41,10 @@ class MusicAdapter(private val mContext: Context?, private val mFiles: ArrayList
                     .into(holder.albumArt)
             }
         }
-        holder.itemView.setOnClickListener{
-            cellClickListener.onCellClickListener(mContext, position)
+        holder.itemView.setOnClickListener {
+            val intent = Intent(mContext, PlayerActivity::class.java)
+            intent.putExtra("position", position)
+            mContext?.startActivity(intent)
         }
         holder.menuMore.setOnClickListener { v ->
             val popupMenu = PopupMenu(mContext, v)

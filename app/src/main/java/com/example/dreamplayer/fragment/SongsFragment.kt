@@ -14,7 +14,7 @@ import com.example.dreamplayer.adapter.MusicAdapter
 import com.example.dreamplayer.R
 import com.example.dreamplayer.activity.MainActivity.Companion.musicFiles
 import com.example.dreamplayer.activity.PlayerActivity
-class SongsFragment : Fragment() , CellClickListener {
+class SongsFragment : Fragment() {
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val view  = inflater.inflate(R.layout.fragment_songs, container, false)
         val recyclerView = view.findViewById<RecyclerView>(R.id.recyclerView)
@@ -23,19 +23,11 @@ class SongsFragment : Fragment() , CellClickListener {
             val musicAdapter =
                 MusicAdapter(
                     context,
-                    musicFiles,
-                    this
+                    musicFiles
                 )
             recyclerView.adapter = musicAdapter
             recyclerView.layoutManager = LinearLayoutManager(context, RecyclerView.VERTICAL, false)
         }
         return view
-    }
-
-    override fun onCellClickListener(mContext: Context?, position: Int) {
-        Toast.makeText(context, "Cell clicked",  Toast.LENGTH_SHORT).show()
-        val intent = Intent(mContext, PlayerActivity::class.java)
-        intent.putExtra("position", position)
-        mContext?.startActivity(intent)
     }
 }

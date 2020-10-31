@@ -14,17 +14,16 @@ import com.example.dreamplayer.activity.AlbumDetails
 import com.example.dreamplayer.R
 import com.example.dreamplayer.model.MusicFiles
 
-class AlbumAdapter(private val mContext: Context?, private val albumFiles: ArrayList<MusicFiles>) :
-    RecyclerView.Adapter<AlbumAdapter.MyViewHolderAlbum>() {
-
+class AlbumDetailsAdapter(private val mContext: Context?, private val albumFiles: ArrayList<MusicFiles>) :
+    RecyclerView.Adapter<AlbumDetailsAdapter.MyViewHolderAlbum>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MyViewHolderAlbum {
-        val view = LayoutInflater.from(mContext).inflate(R.layout.album_item, parent, false)
+        val view = LayoutInflater.from(mContext).inflate(R.layout.music_items, parent, false)
         return MyViewHolderAlbum(view)
     }
 
     override fun onBindViewHolder(holder: MyViewHolderAlbum, position: Int) {
-        holder.albumName.text = albumFiles[position].album
+        holder.albumName.text = albumFiles[position].title
         val image = getAlbumArt(albumFiles[position].path)
         if (mContext != null) {
             if (image != null) {
@@ -34,11 +33,7 @@ class AlbumAdapter(private val mContext: Context?, private val albumFiles: Array
                     .into(holder.albumImage)
             }
         }
-        holder.itemView.setOnClickListener {
-            val intent = Intent(mContext, AlbumDetails::class.java)
-            intent.putExtra("albumName", albumFiles[position].album)
-            mContext?.startActivity(intent)
-        }
+
     }
 
     override fun getItemCount(): Int {
@@ -54,7 +49,7 @@ class AlbumAdapter(private val mContext: Context?, private val albumFiles: Array
     }
 
     class MyViewHolderAlbum(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        val albumName = itemView.findViewById<TextView>(R.id.album_name)
-        val albumImage = itemView.findViewById<ImageView>(R.id.album_image)
+        val albumName = itemView.findViewById<TextView>(R.id.music_file_name)
+        val albumImage = itemView.findViewById<ImageView>(R.id.music_img)
     }
 }

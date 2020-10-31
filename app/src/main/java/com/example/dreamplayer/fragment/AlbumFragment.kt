@@ -17,23 +17,16 @@ import com.example.dreamplayer.activity.PlayerActivity
 import com.example.dreamplayer.adapter.AlbumAdapter
 import com.example.dreamplayer.adapter.MusicAdapter
 
-class AlbumFragment : Fragment(), CellClickListener {
+class AlbumFragment : Fragment(){
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val view  = inflater.inflate(R.layout.fragment_album, container, false)
         val recyclerView = view.findViewById<RecyclerView>(R.id.recyclerView)
         recyclerView.setHasFixedSize(true)
         if (MainActivity.musicFiles.size >= 1) {
-            val albumAdapter = AlbumAdapter(context,  MainActivity.musicFiles,this)
+            val albumAdapter = AlbumAdapter(context,  MainActivity.musicFiles)
             recyclerView.adapter = albumAdapter
             recyclerView.layoutManager = GridLayoutManager(context,2)
         }
         return view
-    }
-
-    override fun onCellClickListener(mContext: Context?, position: Int) {
-        Toast.makeText(context, "Cell clicked",  Toast.LENGTH_SHORT).show()
-        val intent = Intent(mContext, PlayerActivity::class.java)
-        intent.putExtra("position", position)
-        mContext?.startActivity(intent)
     }
 }
