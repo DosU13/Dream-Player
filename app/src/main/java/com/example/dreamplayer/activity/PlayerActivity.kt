@@ -463,7 +463,7 @@ class PlayerActivity : AppCompatActivity() , ActionPlaying, ServiceConnection{
         //musicService = null
     }
 
-    fun showNotification(playPauseBtn : Int){
+    private fun showNotification(playPauseBtn : Int){
         val intent = Intent(this, PlayerActivity::class.java)
         val contentIntent = PendingIntent.getBroadcast(this, 0, intent, 0)
         val prevIntent = Intent(this, PlayerActivity::class.java)
@@ -484,9 +484,9 @@ class PlayerActivity : AppCompatActivity() , ActionPlaying, ServiceConnection{
         val notification = NotificationCompat.Builder(this, CHANNEL_ID_2).
                 setSmallIcon(playPauseBtn).setLargeIcon(thumb).
                 setContentTitle(musicFiles[position].title).setContentText(musicFiles[position].artist).
-                addAction(R.drawable.ic_baseline_skip_previous_24, "Previous", prevPending).
-                addAction(R.drawable.ic_baseline_pause_24, "Pause", pausePending).
-                addAction(R.drawable.ic_baseline_skip_next_24, "next", nextPending).
+                //addAction(R.drawable.ic_baseline_skip_previous_24, "Previous", prevPending).
+                //addAction(playPauseBtn, "Pause", pausePending).
+                //addAction(R.drawable.ic_baseline_skip_next_24, "next", nextPending).
                 setStyle(androidx.media.app.NotificationCompat.MediaStyle().setMediaSession(mediaSessionCompat.sessionToken)).
                 setPriority(NotificationCompat.PRIORITY_HIGH).
                 setOnlyAlertOnce(true).
