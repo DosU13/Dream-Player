@@ -7,6 +7,7 @@ import android.net.Uri
 import android.os.Binder
 import android.os.IBinder
 import android.util.Log
+import com.example.dreamplayer.activity.ActionPlaying
 import com.example.dreamplayer.activity.PlayerActivity.Companion.listSongs
 import com.example.dreamplayer.model.MusicFiles
 
@@ -19,6 +20,7 @@ class MusicService : Service(), MediaPlayer.OnCompletionListener {
     private var musicFiles = ArrayList<MusicFiles>()
     private lateinit var uri : Uri
     var position: Int = -1
+    lateinit var actionPlaying: ActionPlaying
 
     override fun onCreate() {
         super.onCreate()
@@ -92,6 +94,11 @@ class MusicService : Service(), MediaPlayer.OnCompletionListener {
     }
 
     override fun onCompletion(p0: MediaPlayer?) {
-
+        if (::actionPlaying.isInitialized) {
+            actionPlaying.nextBtnClicked()
+        }
+        createMediaPlayer(position)
+        start()
+        onCompleted()
     }
 }

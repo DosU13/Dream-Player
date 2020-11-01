@@ -1,5 +1,7 @@
 package com.example.dreamplayer.activity
 
+import android.app.NotificationManager
+import android.app.PendingIntent
 import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
@@ -16,14 +18,21 @@ import android.os.Bundle
 import android.os.Handler
 import android.os.IBinder
 import android.os.Looper
+import android.support.v4.media.session.MediaSessionCompat
 import android.view.View
 import android.view.animation.Animation
 import android.view.animation.AnimationUtils
 import android.widget.*
+import androidx.core.app.NotificationCompat
 import androidx.palette.graphics.Palette
 import com.bumptech.glide.Glide
+import com.example.dreamplayer.ApplicationClass.Companion.ACTION_PREVIOUS
+import com.example.dreamplayer.ApplicationClass.Companion.ACTION_PLAY
+import com.example.dreamplayer.ApplicationClass.Companion.ACTION_NEXT
+import com.example.dreamplayer.ApplicationClass.Companion.CHANNEL_ID_2
 import com.example.dreamplayer.MusicService
 import com.example.dreamplayer.R
+import com.example.dreamplayer.activity.MainActivity.Companion.musicFiles
 import com.example.dreamplayer.activity.MainActivity.Companion.repeatBoolean
 import com.example.dreamplayer.activity.MainActivity.Companion.shuffleBoolean
 import com.example.dreamplayer.adapter.AlbumDetailsAdapter.Companion.albumFiles
@@ -33,7 +42,7 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton
 import kotlinx.android.synthetic.main.activity_player.*
 import kotlin.random.Random
 
-class PlayerActivity : AppCompatActivity() , MediaPlayer.OnCompletionListener, ActionPlaying, ServiceConnection{
+class PlayerActivity : AppCompatActivity() , ActionPlaying, ServiceConnection{
     private var position = -1
     private lateinit var songName : TextView
     private lateinit var artistName : TextView
@@ -57,10 +66,12 @@ class PlayerActivity : AppCompatActivity() , MediaPlayer.OnCompletionListener, A
         //lateinit var mediaPLayer: MediaPlayer
     }
     private lateinit var handler : Handler
+    lateinit var mediaSessionCompat: MediaSessionCompat
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_player)
+        mediaSessionCompat = MediaSessionCompat(baseContext, "My Audio")
         initViews()
         getIntentMethod()
         seekBar.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener{
@@ -152,7 +163,7 @@ class PlayerActivity : AppCompatActivity() , MediaPlayer.OnCompletionListener, A
                 position = ((position + 1) % listSongs.size)
             }
             uri = Uri.parse(listSongs[position].path)
-            musicService!!.createMediaPlayer(position)
+            musicService.createMediaPlayer(position)
             metaData(uri)
             songName.text = listSongs[position].title
             artistName.text = listSongs[position].artist
@@ -165,6 +176,7 @@ class PlayerActivity : AppCompatActivity() , MediaPlayer.OnCompletionListener, A
                 handler.postDelayed(this, 1000)
             })
             musicService.onCompleted()
+            showNotification(R.drawable.ic_baseline_pause_24)
             playPauseBtn.setBackgroundResource(R.drawable.ic_baseline_pause_24)
             musicService.start()
         }
@@ -186,6 +198,7 @@ class PlayerActivity : AppCompatActivity() , MediaPlayer.OnCompletionListener, A
                 handler.postDelayed(this, 1000)
             })
             musicService.onCompleted()
+            showNotification(R.drawable.ic_baseline_play_arrow_24)
             playPauseBtn.setBackgroundResource(R.drawable.ic_baseline_play_arrow_24)
         }
     }
@@ -224,6 +237,7 @@ class PlayerActivity : AppCompatActivity() , MediaPlayer.OnCompletionListener, A
                 handler.postDelayed(this, 1000)
             })
             musicService.onCompleted()
+            showNotification(R.drawable.ic_baseline_pause_24)
             playPauseBtn.setBackgroundResource(R.drawable.ic_baseline_pause_24)
             musicService.start()
         }
@@ -251,6 +265,7 @@ class PlayerActivity : AppCompatActivity() , MediaPlayer.OnCompletionListener, A
                 handler.postDelayed(this, 1000)
             })
             musicService.onCompleted()
+            showNotification(R.drawable.ic_baseline_play_arrow_24)
             playPauseBtn.setBackgroundResource(R.drawable.ic_baseline_play_arrow_24)
         }
     }
@@ -266,6 +281,7 @@ class PlayerActivity : AppCompatActivity() , MediaPlayer.OnCompletionListener, A
 
     override fun playPauseBtnClicked() {
         if (musicService.isPlaying){
+            showNotification(R.drawable.ic_baseline_play_arrow_24)
             playPauseBtn.setImageResource(R.drawable.ic_baseline_play_arrow_24)
             musicService.pause()
             seekBar.max = musicService.duration / 1000
@@ -279,6 +295,7 @@ class PlayerActivity : AppCompatActivity() , MediaPlayer.OnCompletionListener, A
         }
         else{
             playPauseBtn.setImageResource(R.drawable.ic_baseline_pause_24)
+            showNotification(R.drawable.ic_baseline_pause_24)
             musicService.start()
             seekBar.max = musicService.duration / 1000
             this@PlayerActivity.runOnUiThread(runnable {
@@ -308,6 +325,7 @@ class PlayerActivity : AppCompatActivity() , MediaPlayer.OnCompletionListener, A
         val sender = intent.getStringExtra("sender")
         listSongs = if (sender != null && sender == "albumDetails") albumFiles
                     else mFiles
+        showNotification(R.drawable.ic_baseline_pause_24)
         playPauseBtn.setImageResource(R.drawable.ic_baseline_pause_24)
         uri = Uri.parse(listSongs[position].path)
         val intent = Intent(this, MusicService::class.java)
@@ -430,15 +448,6 @@ class PlayerActivity : AppCompatActivity() , MediaPlayer.OnCompletionListener, A
         }
     }
 
-    override fun onCompletion(p0: MediaPlayer?) {
-        nextBtnClicked()
-        if (::musicService.isInitialized){
-            musicService.createMediaPlayer(position)
-            musicService.start()
-            musicService.onCompleted()
-        }
-    }
-
     override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
         val myBinder = service as MusicService.MyBinder
         musicService = myBinder.service
@@ -452,5 +461,45 @@ class PlayerActivity : AppCompatActivity() , MediaPlayer.OnCompletionListener, A
 
     override fun onServiceDisconnected(p0: ComponentName?) {
         //musicService = null
+    }
+
+    fun showNotification(playPauseBtn : Int){
+        val intent = Intent(this, PlayerActivity::class.java)
+        val contentIntent = PendingIntent.getBroadcast(this, 0, intent, 0)
+        val prevIntent = Intent(this, PlayerActivity::class.java)
+        prevIntent.action = ACTION_PREVIOUS
+        val prevPending = PendingIntent.getBroadcast(this, 0, prevIntent, PendingIntent.FLAG_UPDATE_CURRENT)
+        val pauseIntent = Intent(this, PlayerActivity::class.java)
+        prevIntent.action = ACTION_PLAY
+        val pausePending = PendingIntent.getBroadcast(this, 0, pauseIntent, PendingIntent.FLAG_UPDATE_CURRENT)
+        val nextIntent = Intent(this, PlayerActivity::class.java)
+        prevIntent.action = ACTION_NEXT
+        val nextPending = PendingIntent.getBroadcast(this, 0, nextIntent, PendingIntent.FLAG_UPDATE_CURRENT)
+        val picture = getAlbumArt(musicFiles[position].path)
+        val thumb = if (picture!=null){
+            BitmapFactory.decodeByteArray(picture, 0, picture.size) }
+        else{
+            BitmapFactory.decodeResource(resources, R.drawable.ic_launcher_background)
+        }
+        val notification = NotificationCompat.Builder(this, CHANNEL_ID_2).
+                setSmallIcon(playPauseBtn).setLargeIcon(thumb).
+                setContentTitle(musicFiles[position].title).setContentText(musicFiles[position].artist).
+                addAction(R.drawable.ic_baseline_skip_previous_24, "Previous", prevPending).
+                addAction(R.drawable.ic_baseline_pause_24, "Pause", pausePending).
+                addAction(R.drawable.ic_baseline_skip_next_24, "next", nextPending).
+                setStyle(androidx.media.app.NotificationCompat.MediaStyle().setMediaSession(mediaSessionCompat.sessionToken)).
+                setPriority(NotificationCompat.PRIORITY_HIGH).
+                setOnlyAlertOnce(true).
+                build()
+        val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+        notificationManager.notify(0, notification)
+    }
+
+    private fun getAlbumArt(uri: String): ByteArray? {
+        val retriever = MediaMetadataRetriever()
+        retriever.setDataSource(uri)
+        val art = retriever.embeddedPicture
+        retriever.release()
+        return art
     }
 }
