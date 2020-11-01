@@ -24,7 +24,6 @@ import androidx.palette.graphics.Palette
 import com.bumptech.glide.Glide
 import com.example.dreamplayer.MusicService
 import com.example.dreamplayer.R
-import com.example.dreamplayer.activity.MainActivity.Companion.musicFiles
 import com.example.dreamplayer.activity.MainActivity.Companion.repeatBoolean
 import com.example.dreamplayer.activity.MainActivity.Companion.shuffleBoolean
 import com.example.dreamplayer.adapter.AlbumDetailsAdapter.Companion.albumFiles
@@ -51,12 +50,11 @@ class PlayerActivity : AppCompatActivity() , MediaPlayer.OnCompletionListener, A
     private lateinit var playThread : Thread
     private lateinit var prevThread : Thread
     private lateinit var nextThread: Thread
-    private var musicService: MusicService? = null
+    private lateinit var musicService: MusicService
     companion object {
         var listSongs = ArrayList<MusicFiles>()
         lateinit var uri : Uri
-        lateinit var mediaPlayer: MediaPlayer
-        var isInitialized = false
+        //lateinit var mediaPLayer: MediaPlayer
     }
     private lateinit var handler : Handler
 
@@ -65,14 +63,14 @@ class PlayerActivity : AppCompatActivity() , MediaPlayer.OnCompletionListener, A
         setContentView(R.layout.activity_player)
         initViews()
         getIntentMethod()
-        songName.text = listSongs[position].title
-        song_artist.text = listSongs[position].artist
-        mediaPlayer.setOnCompletionListener(this)
         seekBar.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener{
-            override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
-                if (isInitialized && fromUser){
-                    mediaPlayer.seekTo(progress * 1000)
+            override fun onProgressChanged(seekBarNotMy: SeekBar?, progress: Int, fromUser: Boolean) {
+                if (::musicService.isInitialized && fromUser){
+                    musicService.seekTo(progress * 1000)
                 }
+                val mCurrentPosition = musicService.currentPosition/1000
+                seekBar.progress = mCurrentPosition
+                durationPlayed.text = formattedTime(mCurrentPosition)
             }
 
             override fun onStartTrackingTouch(p0: SeekBar?) {
@@ -86,8 +84,8 @@ class PlayerActivity : AppCompatActivity() , MediaPlayer.OnCompletionListener, A
 
         handler = Handler(Looper.getMainLooper())
         this@PlayerActivity.runOnUiThread(runnable {
-            if (isInitialized){
-                val mCurrentPosition = mediaPlayer.currentPosition/1000
+            if (::musicService.isInitialized){
+                val mCurrentPosition = musicService.currentPosition/1000
                 seekBar.progress = mCurrentPosition
                 durationPlayed.text = formattedTime(mCurrentPosition)
             }
@@ -144,9 +142,9 @@ class PlayerActivity : AppCompatActivity() , MediaPlayer.OnCompletionListener, A
     }
 
     override fun nextBtnClicked() {
-        if (mediaPlayer.isPlaying){
-            mediaPlayer.stop()
-            mediaPlayer.release()
+        if (musicService.isPLaying()){
+            musicService.stop()
+            musicService.release()
             if (shuffleBoolean && !repeatBoolean){
                 position = Random.nextInt(0,listSongs.size)
             }
@@ -154,40 +152,40 @@ class PlayerActivity : AppCompatActivity() , MediaPlayer.OnCompletionListener, A
                 position = ((position + 1) % listSongs.size)
             }
             uri = Uri.parse(listSongs[position].path)
-            mediaPlayer = MediaPlayer.create(applicationContext, uri)
+            musicService!!.createMediaPlayer(position)
             metaData(uri)
             songName.text = listSongs[position].title
             artistName.text = listSongs[position].artist
-            seekBar.max = mediaPlayer.duration / 1000
+            seekBar.max = musicService.duration / 1000
             this@PlayerActivity.runOnUiThread(runnable {
-                if (isInitialized){
-                    val mCurrentPosition = mediaPlayer.currentPosition/1000
+                if (::musicService.isInitialized){
+                    val mCurrentPosition = musicService.currentPosition/1000
                     seekBar.progress = mCurrentPosition
                 }
                 handler.postDelayed(this, 1000)
             })
-            mediaPlayer.setOnCompletionListener(this)
+            musicService.onCompleted()
             playPauseBtn.setBackgroundResource(R.drawable.ic_baseline_pause_24)
-            mediaPlayer.start()
+            musicService.start()
         }
         else{
-            mediaPlayer.stop()
-            mediaPlayer.release()
+            musicService.stop()
+            musicService.release()
             position = ((position + 1) % listSongs.size)
             uri = Uri.parse(listSongs[position].path)
-            mediaPlayer = MediaPlayer.create(applicationContext, uri)
+            musicService.createMediaPlayer(position)
             metaData(uri)
             songName.text = listSongs[position].title
             artistName.text = listSongs[position].artist
-            seekBar.max = mediaPlayer.duration / 1000
+            seekBar.max = musicService.duration / 1000
             this@PlayerActivity.runOnUiThread(runnable {
-                if (isInitialized){
-                    val mCurrentPosition = mediaPlayer.currentPosition/1000
+                if (::musicService.isInitialized){
+                    val mCurrentPosition = musicService.currentPosition/1000
                     seekBar.progress = mCurrentPosition
                 }
                 handler.postDelayed(this, 1000)
             })
-            mediaPlayer.setOnCompletionListener(this)
+            musicService.onCompleted()
             playPauseBtn.setBackgroundResource(R.drawable.ic_baseline_play_arrow_24)
         }
     }
@@ -202,9 +200,9 @@ class PlayerActivity : AppCompatActivity() , MediaPlayer.OnCompletionListener, A
     }
 
     override fun prevBtnClicked() {
-        if (mediaPlayer.isPlaying){
-            mediaPlayer.stop()
-            mediaPlayer.release()
+        if (musicService.isPLaying()){
+            musicService.stop()
+            musicService.release()
             if (shuffleBoolean && !repeatBoolean){
                 position = Random.nextInt(0,listSongs.size)
             }
@@ -213,25 +211,25 @@ class PlayerActivity : AppCompatActivity() , MediaPlayer.OnCompletionListener, A
                 else position--
             }
             uri = Uri.parse(listSongs[position].path)
-            mediaPlayer = MediaPlayer.create(applicationContext, uri)
+            musicService.createMediaPlayer(position)
             metaData(uri)
             songName.text = listSongs[position].title
             artistName.text = listSongs[position].artist
-            seekBar.max = mediaPlayer.duration / 1000
+            seekBar.max = musicService.duration / 1000
             this@PlayerActivity.runOnUiThread(runnable {
-                if (isInitialized){
-                    val mCurrentPosition = mediaPlayer.currentPosition/1000
+                if (::musicService.isInitialized){
+                    val mCurrentPosition = musicService.currentPosition/1000
                     seekBar.progress = mCurrentPosition
                 }
                 handler.postDelayed(this, 1000)
             })
-            mediaPlayer.setOnCompletionListener(this)
+            musicService.onCompleted()
             playPauseBtn.setBackgroundResource(R.drawable.ic_baseline_pause_24)
-            mediaPlayer.start()
+            musicService.start()
         }
         else{
-            mediaPlayer.stop()
-            mediaPlayer.release()
+            musicService.stop()
+            musicService.release()
             if (shuffleBoolean && !repeatBoolean){
                 position = Random.nextInt(0,listSongs.size)
             }
@@ -240,19 +238,19 @@ class PlayerActivity : AppCompatActivity() , MediaPlayer.OnCompletionListener, A
                 else position--
             }
             uri = Uri.parse(listSongs[position].path)
-            mediaPlayer = MediaPlayer.create(applicationContext, uri)
+            musicService.createMediaPlayer(position)
             metaData(uri)
             songName.text = listSongs[position].title
             artistName.text = listSongs[position].artist
-            seekBar.max = mediaPlayer.duration / 1000
+            seekBar.max = musicService.duration / 1000
             this@PlayerActivity.runOnUiThread(runnable {
-                if (isInitialized){
-                    val mCurrentPosition = mediaPlayer.currentPosition/1000
+                if (::musicService.isInitialized){
+                    val mCurrentPosition = musicService.currentPosition/1000
                     seekBar.progress = mCurrentPosition
                 }
                 handler.postDelayed(this, 1000)
             })
-            mediaPlayer.setOnCompletionListener(this)
+            musicService.onCompleted()
             playPauseBtn.setBackgroundResource(R.drawable.ic_baseline_play_arrow_24)
         }
     }
@@ -267,13 +265,13 @@ class PlayerActivity : AppCompatActivity() , MediaPlayer.OnCompletionListener, A
     }
 
     override fun playPauseBtnClicked() {
-        if (mediaPlayer.isPlaying){
+        if (musicService.isPlaying){
             playPauseBtn.setImageResource(R.drawable.ic_baseline_play_arrow_24)
-            mediaPlayer.pause()
-            seekBar.max = mediaPlayer.duration / 1000
+            musicService.pause()
+            seekBar.max = musicService.duration / 1000
             this@PlayerActivity.runOnUiThread(runnable {
-                if (isInitialized){
-                    val mCurrentPosition = mediaPlayer.currentPosition/1000
+                if (::musicService.isInitialized){
+                    val mCurrentPosition = musicService.currentPosition/1000
                     seekBar.progress = mCurrentPosition
                 }
                 handler.postDelayed(this, 1000)
@@ -281,11 +279,11 @@ class PlayerActivity : AppCompatActivity() , MediaPlayer.OnCompletionListener, A
         }
         else{
             playPauseBtn.setImageResource(R.drawable.ic_baseline_pause_24)
-            mediaPlayer.start()
-            seekBar.max = mediaPlayer.duration / 1000
+            musicService.start()
+            seekBar.max = musicService.duration / 1000
             this@PlayerActivity.runOnUiThread(runnable {
-                if (isInitialized){
-                    val mCurrentPosition = mediaPlayer.currentPosition/1000
+                if (::musicService.isInitialized){
+                    val mCurrentPosition = musicService.currentPosition/1000
                     seekBar.progress = mCurrentPosition
                 }
                 handler.postDelayed(this, 1000)
@@ -308,30 +306,25 @@ class PlayerActivity : AppCompatActivity() , MediaPlayer.OnCompletionListener, A
     private fun getIntentMethod() {
         position = intent.getIntExtra("position", -1)
         val sender = intent.getStringExtra("sender")
-        if (sender != null && sender == "albumDetails"){
-            listSongs = albumFiles
-        }
-        else {
-            listSongs = mFiles
-        }
+        listSongs = if (sender != null && sender == "albumDetails") albumFiles
+                    else mFiles
         playPauseBtn.setImageResource(R.drawable.ic_baseline_pause_24)
         uri = Uri.parse(listSongs[position].path)
-        if (isInitialized){
-            mediaPlayer.stop()
-            mediaPlayer.reset()
-            mediaPlayer.release()
-            mediaPlayer = MediaPlayer.create(applicationContext, uri)
-            mediaPlayer.start()
-            Toast.makeText(this,"initialized", Toast.LENGTH_LONG).show()
-        }
-        else{
-            mediaPlayer = MediaPlayer.create(applicationContext, uri)
-            mediaPlayer.start()
-            isInitialized = true
-            Toast.makeText(this, "not init", Toast.LENGTH_LONG).show()
-        }
-        seekBar.max = mediaPlayer.duration / 1000
-        metaData(uri)
+        val intent = Intent(this, MusicService::class.java)
+        intent.putExtra("servicePosition", position)
+        startService(intent)
+//        if (::musicService.isInitialized){
+//            musicService.stop()
+//            musicService.reset()
+//            musicService.release()
+//            musicService.createMediaPlayer(position)
+//            musicService.start()
+//        }
+//        else{
+//            musicService.createMediaPlayer(position)
+//            musicService.start()
+//            ::musicService.isInitialized = true
+//        }
     }
 
     private fun initViews() {
@@ -439,10 +432,10 @@ class PlayerActivity : AppCompatActivity() , MediaPlayer.OnCompletionListener, A
 
     override fun onCompletion(p0: MediaPlayer?) {
         nextBtnClicked()
-        if (isInitialized){
-            mediaPlayer = MediaPlayer.create(applicationContext, uri)
-            mediaPlayer.start()
-            mediaPlayer.setOnCompletionListener(this)
+        if (::musicService.isInitialized){
+            musicService.createMediaPlayer(position)
+            musicService.start()
+            musicService.onCompleted()
         }
     }
 
@@ -450,9 +443,14 @@ class PlayerActivity : AppCompatActivity() , MediaPlayer.OnCompletionListener, A
         val myBinder = service as MusicService.MyBinder
         musicService = myBinder.service
         Toast.makeText(this, "Connected$musicService", Toast.LENGTH_SHORT).show()
+        seekBar.max = musicService.duration / 1000
+        metaData(uri)
+        songName.text = listSongs[position].title
+        song_artist.text = listSongs[position].artist
+        musicService.onCompleted()
     }
 
     override fun onServiceDisconnected(p0: ComponentName?) {
-        musicService = null
+        //musicService = null
     }
 }
