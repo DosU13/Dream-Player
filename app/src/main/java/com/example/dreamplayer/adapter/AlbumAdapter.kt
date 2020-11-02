@@ -30,7 +30,7 @@ class AlbumAdapter(private val mContext: Context?, private val albumFiles: Array
             if (image != null) {
                 Glide.with(mContext).asBitmap().load(image).into(holder.albumImage)
             } else {
-                Glide.with(mContext).load(R.drawable.ic_launcher_background)
+                Glide.with(mContext).load(R.drawable.default_art)
                     .into(holder.albumImage)
             }
         }

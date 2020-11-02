@@ -6,15 +6,20 @@
 
     <application
         android:allowBackup="true"
-        android:icon="@mipmap/ic_launcher"
+        android:icon="@drawable/logo"
         android:label="@string/app_name"
-        android:roundIcon="@mipmap/ic_launcher_round"
+        android:roundIcon="@drawable/logo"
         android:supportsRtl="true"
         android:name=".ApplicationClass"
-        android:theme="@style/AppTheme">
-        <activity android:name=".activity.AlbumDetails"/>
-        <activity android:name=".activity.PlayerActivity" />
-        <activity android:name=".activity.MainActivity">
+        android:theme="@style/AppTheme"
+        android:screenOrientation="portrait">
+        <activity android:name=".activity.AlbumDetails"
+            android:screenOrientation="portrait"/>
+        <activity android:name=".activity.PlayerActivity"
+            android:theme="@style/AppTheme.NoActionBar"
+            android:screenOrientation="portrait"/>
+        <activity android:name=".activity.MainActivity"
+            android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

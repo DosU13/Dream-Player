@@ -43,7 +43,7 @@ class MusicAdapter(private val mContext: Context?, private val mFilesVal: ArrayL
             if (image != null) {
                 Glide.with(mContext).asBitmap().load(image).into(holder.albumArt)
             } else {
-                Glide.with(mContext).load(R.drawable.ic_launcher_background)
+                Glide.with(mContext).load(R.drawable.default_art)
                     .into(holder.albumArt)
             }
         }

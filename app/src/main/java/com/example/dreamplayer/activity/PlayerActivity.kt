@@ -102,31 +102,27 @@ class PlayerActivity : AppCompatActivity() , ActionPlaying, ServiceConnection{
             }
             handler.postDelayed(this, 1000)
         })
-        shuffleBtn.setOnClickListener(object: View.OnClickListener{
-            override fun onClick(p0: View?) {
-                if (shuffleBoolean){
-                    shuffleBoolean = false
-                    shuffleBtn.setImageResource(R.drawable.ic_baseline_shuffle_24)
-                }
-                else{
-                    shuffleBoolean = true
-                    shuffleBtn.setImageResource(R.drawable.ic_baseline_shuffle_off_24)
-                }
+        shuffleBtn.setOnClickListener {
+            if (shuffleBoolean){
+                shuffleBoolean = false
+                shuffleBtn.setImageResource(R.drawable.ic_baseline_shuffle_24)
+            } else{
+                shuffleBoolean = true
+                shuffleBtn.setImageResource(R.drawable.ic_baseline_shuffle_off_24)
             }
-        })
-        repeatBtn.setOnClickListener(object : View.OnClickListener {
-            override fun onClick(p0: View?) {
-                if (repeatBoolean){
-                    repeatBoolean = false
-                    repeatBtn.setImageResource(R.drawable.ic_baseline_repeat_off_24)
-                }
-                else{
-                    repeatBoolean = true
-                    repeatBtn.setImageResource(R.drawable.ic_baseline_repeat_24)
-                }
+        }
+        repeatBtn.setOnClickListener {
+            if (repeatBoolean){
+                repeatBoolean = false
+                repeatBtn.setImageResource(R.drawable.ic_baseline_repeat_off_24)
+            } else{
+                repeatBoolean = true
+                repeatBtn.setImageResource(R.drawable.ic_baseline_repeat_24)
             }
-
-        })
+        }
+        backBtn.setOnClickListener {
+            finish()
+        }
     }
 
     override fun onResume() {
@@ -403,7 +399,7 @@ class PlayerActivity : AppCompatActivity() , ActionPlaying, ServiceConnection{
             })
         }
         else {
-            Glide.with(this).asBitmap().load(R.drawable.ic_launcher_background).into(coverArt)
+            Glide.with(this).asBitmap().load(R.drawable.default_art).into(coverArt)
             val gradient = findViewById<ImageView>(R.id.imageViewGradient)
             val mContainer = findViewById<RelativeLayout>(R.id.mContainer)
             gradient.setBackgroundResource(R.drawable.gradient_bg)
@@ -451,7 +447,6 @@ class PlayerActivity : AppCompatActivity() , ActionPlaying, ServiceConnection{
     override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
         val myBinder = service as MusicService.MyBinder
         musicService = myBinder.service
-        Toast.makeText(this, "Connected$musicService", Toast.LENGTH_SHORT).show()
         seekBar.max = musicService.duration / 1000
         metaData(uri)
         songName.text = listSongs[position].title
@@ -479,14 +474,14 @@ class PlayerActivity : AppCompatActivity() , ActionPlaying, ServiceConnection{
         val thumb = if (picture!=null){
             BitmapFactory.decodeByteArray(picture, 0, picture.size) }
         else{
-            BitmapFactory.decodeResource(resources, R.drawable.ic_launcher_background)
+            BitmapFactory.decodeResource(resources, R.drawable.default_art)
         }
         val notification = NotificationCompat.Builder(this, CHANNEL_ID_2).
                 setSmallIcon(playPauseBtn).setLargeIcon(thumb).
                 setContentTitle(musicFiles[position].title).setContentText(musicFiles[position].artist).
-                //addAction(R.drawable.ic_baseline_skip_previous_24, "Previous", prevPending).
-                //addAction(playPauseBtn, "Pause", pausePending).
-                //addAction(R.drawable.ic_baseline_skip_next_24, "next", nextPending).
+                addAction(R.drawable.ic_baseline_skip_previous_24, "Previous", prevPending).
+                addAction(playPauseBtn, "Pause", pausePending).
+                addAction(R.drawable.ic_baseline_skip_next_24, "next", nextPending).
                 setStyle(androidx.media.app.NotificationCompat.MediaStyle().setMediaSession(mediaSessionCompat.sessionToken)).
                 setPriority(NotificationCompat.PRIORITY_HIGH).
                 setOnlyAlertOnce(true).

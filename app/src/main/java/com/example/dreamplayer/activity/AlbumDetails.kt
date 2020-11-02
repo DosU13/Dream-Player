@@ -32,7 +32,7 @@ class AlbumDetails : AppCompatActivity() {
             Glide.with(this).load(image).into(albumPhoto)
         }
         else{
-            Glide.with(this).load(R.drawable.ic_launcher_background).into(albumPhoto)
+            Glide.with(this).load(R.drawable.default_art).into(albumPhoto)
         }
     }
 

@@ -55,7 +55,7 @@
         <ImageView
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:src="@drawable/ic_launcher_background"
+            android:src="@drawable/default_art"
             android:scaleType="centerCrop"
             android:id="@+id/cover_art"/>
 
@@ -104,13 +104,14 @@
         android:background="@drawable/gradient_bg">
 
         <ImageView
+            android:id="@+id/id_shuffle"
             android:layout_width="35dp"
             android:layout_height="35dp"
-            android:id="@+id/id_shuffle"
-            android:src="@drawable/ic_baseline_shuffle_off_24"
-            android:layout_centerVertical="true"
+            android:layout_alignEnd="@id/id_prev"
             android:layout_alignParentStart="true"
-            android:layout_marginEnd="32dp"/>
+            android:layout_centerVertical="true"
+            android:layout_marginEnd="32dp"
+            android:src="@drawable/ic_baseline_shuffle_off_24" />
 
         <ImageView
             android:layout_width="35dp"
@@ -141,13 +142,14 @@
             android:layout_marginEnd="16dp"/>
 
         <ImageView
+            android:id="@+id/id_repeat"
             android:layout_width="35dp"
             android:layout_height="35dp"
-            android:id="@+id/id_repeat"
-            android:src="@drawable/ic_baseline_repeat_off_24"
-            android:layout_centerVertical="true"
+            android:layout_alignLeft="@id/id_next"
             android:layout_alignParentEnd="true"
-            android:layout_marginStart="32dp"/>
+            android:layout_centerVertical="true"
+            android:layout_marginStart="32dp"
+            android:src="@drawable/ic_baseline_repeat_off_24" />
     </RelativeLayout>
 
     <RelativeLayout

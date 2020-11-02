@@ -1,7 +1,6 @@
 package com.example.dreamplayer.activity
 
 import android.content.Context
-import android.content.SharedPreferences
 import android.content.pm.PackageManager
 import android.os.Bundle
 import android.provider.MediaStore
@@ -15,8 +14,8 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentPagerAdapter
 import androidx.viewpager.widget.ViewPager
-import com.example.dreamplayer.fragment.AlbumFragment
 import com.example.dreamplayer.R
+import com.example.dreamplayer.fragment.AlbumFragment
 import com.example.dreamplayer.fragment.SongsFragment
 import com.example.dreamplayer.model.MusicFiles
 import com.google.android.material.tabs.TabLayout
