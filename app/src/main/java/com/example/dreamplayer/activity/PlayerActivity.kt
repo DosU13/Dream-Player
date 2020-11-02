@@ -11,7 +11,6 @@ import android.graphics.BitmapFactory
 import android.graphics.Color
 import android.graphics.drawable.GradientDrawable
 import android.media.MediaMetadataRetriever
-import android.media.MediaPlayer
 import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
@@ -26,6 +25,7 @@ import android.widget.*
 import androidx.core.app.NotificationCompat
 import androidx.palette.graphics.Palette
 import com.bumptech.glide.Glide
+import com.example.dreamplayer.ActionPlaying
 import com.example.dreamplayer.ApplicationClass.Companion.ACTION_PREVIOUS
 import com.example.dreamplayer.ApplicationClass.Companion.ACTION_PLAY
 import com.example.dreamplayer.ApplicationClass.Companion.ACTION_NEXT
@@ -42,7 +42,8 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton
 import kotlinx.android.synthetic.main.activity_player.*
 import kotlin.random.Random
 
-class PlayerActivity : AppCompatActivity() , ActionPlaying, ServiceConnection{
+class PlayerActivity : AppCompatActivity() ,
+    ActionPlaying, ServiceConnection{
     private var position = -1
     private lateinit var songName : TextView
     private lateinit var artistName : TextView
@@ -362,41 +363,59 @@ class PlayerActivity : AppCompatActivity() , ActionPlaying, ServiceConnection{
         val durationTotalInt = Integer.parseInt(listSongs[position].duration) / 1000
         durationTotal.text = formattedTime(durationTotalInt)
         val art : ByteArray? = retriever.embeddedPicture
-        var bitmap : Bitmap?
+        val bitmap : Bitmap?
         if (art != null){
             bitmap = BitmapFactory.decodeByteArray(art, 0, art.size)
-            imageAnimation(this, coverArt, bitmap)
-            Palette.from(bitmap).generate(Palette.PaletteAsyncListener {
-                val swatch = it?.dominantSwatch
-                if(swatch!=null){
-                    val gradient = findViewById<ImageView>(R.id.imageViewGradient)
-                    val mContainer = findViewById<RelativeLayout>(R.id.mContainer)
-                    gradient.setBackgroundResource(R.drawable.gradient_bg)
-                    mContainer.setBackgroundResource(R.drawable.main_bg)
-                    val gradientDrawable = GradientDrawable(GradientDrawable.Orientation.BOTTOM_TOP,
-                    intArrayOf(swatch.rgb, 0x00000000))
-                    gradient.background = gradientDrawable
-                    val gradientDrawableBg = GradientDrawable(GradientDrawable.Orientation.BOTTOM_TOP,
-                    intArrayOf(swatch.rgb, swatch.rgb))
-                    mContainer.background = gradientDrawableBg
-                    songName.setTextColor(swatch.titleTextColor)
-                    artistName.setTextColor(swatch.bodyTextColor)
-                }
-                else{
-                    val gradient = findViewById<ImageView>(R.id.imageViewGradient)
-                    val mContainer = findViewById<RelativeLayout>(R.id.mContainer)
-                    gradient.setBackgroundResource(R.drawable.gradient_bg)
-                    mContainer.setBackgroundResource(R.drawable.main_bg)
-                    val gradientDrawable = GradientDrawable(GradientDrawable.Orientation.BOTTOM_TOP,
-                        intArrayOf(0xff000000.toInt(), 0x00000000))
-                    gradient.background = gradientDrawable
-                    val gradientDrawableBg = GradientDrawable(GradientDrawable.Orientation.BOTTOM_TOP,
-                        intArrayOf(0xff000000.toInt(), 0xff000000.toInt()))
-                    mContainer.background = gradientDrawableBg
-                    songName.setTextColor(Color.WHITE)
-                    artistName.setTextColor(Color.DKGRAY)
-                }
-            })
+            if (bitmap != null) {
+                imageAnimation(this, coverArt, bitmap)
+                Palette.from(bitmap).generate(Palette.PaletteAsyncListener {
+                    val swatch = it?.dominantSwatch
+                    if (swatch != null) {
+                        val gradient = findViewById<ImageView>(R.id.imageViewGradient)
+                        val mContainer = findViewById<RelativeLayout>(R.id.mContainer)
+                        gradient.setBackgroundResource(R.drawable.gradient_bg)
+                        mContainer.setBackgroundResource(R.drawable.main_bg)
+                        val gradientDrawable = GradientDrawable(
+                            GradientDrawable.Orientation.BOTTOM_TOP,
+                            intArrayOf(swatch.rgb, 0x00000000)
+                        )
+                        gradient.background = gradientDrawable
+                        val gradientDrawableBg = GradientDrawable(
+                            GradientDrawable.Orientation.BOTTOM_TOP,
+                            intArrayOf(swatch.rgb, swatch.rgb)
+                        )
+                        mContainer.background = gradientDrawableBg
+                        songName.setTextColor(swatch.titleTextColor)
+                        artistName.setTextColor(swatch.bodyTextColor)
+                    } else {
+                        val gradient = findViewById<ImageView>(R.id.imageViewGradient)
+                        val mContainer = findViewById<RelativeLayout>(R.id.mContainer)
+                        gradient.setBackgroundResource(R.drawable.gradient_bg)
+                        mContainer.setBackgroundResource(R.drawable.main_bg)
+                        val gradientDrawable = GradientDrawable(
+                            GradientDrawable.Orientation.BOTTOM_TOP,
+                            intArrayOf(0xff000000.toInt(), 0x00000000)
+                        )
+                        gradient.background = gradientDrawable
+                        val gradientDrawableBg = GradientDrawable(
+                            GradientDrawable.Orientation.BOTTOM_TOP,
+                            intArrayOf(0xff000000.toInt(), 0xff000000.toInt())
+                        )
+                        mContainer.background = gradientDrawableBg
+                        songName.setTextColor(Color.WHITE)
+                        artistName.setTextColor(Color.DKGRAY)
+                    }
+                })
+            }
+            else{
+                Glide.with(this).asBitmap().load(R.drawable.default_art).into(coverArt)
+                val gradient = findViewById<ImageView>(R.id.imageViewGradient)
+                val mContainer = findViewById<RelativeLayout>(R.id.mContainer)
+                gradient.setBackgroundResource(R.drawable.gradient_bg)
+                mContainer.setBackgroundResource(R.drawable.main_bg)
+                songName.setTextColor(Color.WHITE)
+                artistName.setTextColor(Color.DKGRAY)
+            }
         }
         else {
             Glide.with(this).asBitmap().load(R.drawable.default_art).into(coverArt)

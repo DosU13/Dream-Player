@@ -1,4 +1,4 @@
-package com.example.dreamplayer.activity
+package com.example.dreamplayer
 
 interface ActionPlaying {
     fun playPauseBtnClicked()
