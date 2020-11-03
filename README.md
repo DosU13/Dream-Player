@@ -32,3 +32,54 @@
   <td><img align="left" width="400" src="screenshots/album_details.jpg"></td>
  </tr>
 </table>
+
+<table><tr><td>After clicking on a song it will display player and start to play, UI colors will change according to song's art's color</td></tr></table>
+<table>
+ <tr>
+  <td><img src="screenshots/player.jpg"></td>
+  <td><img src="screenshots/player 2.jpg"></td>
+  <td><img src="screenshots/default_art.jpg"></td>
+  <td><img src="screenshots/turn_off.jpg"></td>
+ </tr>
+</table>
+ 
+ ## Screenshots of cpabilities
+ 
+<table>
+ <tr>
+  <td> App icon </td>
+  <td> Logo </td>
+  <td> Asking for permission </td>
+ </tr>
+ <tr>
+  <td><img src="screenshots/icon.jpg" width=400></td>
+  <td><img src="screenshots/logo.png" width=400></td>
+  <td><img src="screenshots/ask.jpg" width=400></td>
+ </tr>
+</table>
+
+<table>
+ <tr>
+  <td> Searching songs</td>
+  <td> Sorting songs list</td>
+  <td> Notification </td>
+ </tr>
+ <tr>
+  <td><img src="screenshots/search.jpg" width=400></td>
+  <td><img src="screenshots/sort.jpg" width=400></td>
+  <td><img src="screenshots/notification.jpg" width=400></td>
+ </tr>
+</table>
+
+<table>
+ <tr>
+  <td> Default art of songs </td>
+  <td> Shuffle and repeat off</td>
+  <td> Shuffle and repeat on</td>
+ </tr>
+ <tr>
+  <td><img src="screenshots/default_art.jpg" width=400></td>
+  <td><img src="screenshots/turn_off.jpg" width=400></td>
+  <td><img src="screenshots/turn_on.jpg" width=400></td>
+ </tr>
+</table>
