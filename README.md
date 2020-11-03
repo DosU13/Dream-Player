@@ -11,5 +11,5 @@
   * Animation and design (figma or other) - 10 pts max - use material kit ✅[Figma Design](https://www.figma.com/file/Dzu0dTdNDn2O7xfExjS8C6/Main?node-id=0%3A1); [Figma Present](https://www.figma.com/proto/Dzu0dTdNDn2O7xfExjS8C6/Main?node-id=2%3A0&scaling=scale-down)
 * Bonus points for retrofit calls and Unit testing (10 pts max each) ❌
 
-
-![When you enter it](screenshots/songs.jpg)![](screenshots/album.jpg)
+<img align="left" width="300" src="screenshots/songs.jpg">
+<img align="right" width="300" src="screenshots/album.jpg">
