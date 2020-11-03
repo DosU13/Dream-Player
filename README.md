@@ -12,10 +12,23 @@
   * Animation and design (figma or other) - 10 pts max - use material kit ✅[Figma Design](https://www.figma.com/file/Dzu0dTdNDn2O7xfExjS8C6/Main?node-id=0%3A1); [Figma Present](https://www.figma.com/proto/Dzu0dTdNDn2O7xfExjS8C6/Main?node-id=2%3A0&scaling=scale-down)
 * Bonus points for retrofit calls and Unit testing (10 pts max each) ❌
 
-## App starts with songs list | And on the second tab albums list:
-:---------------------------:|:------------------:
-![](screenshots/songs.jpg)|![](screenshots/album.jpg) 
-<br />
+## Screenshots of UI
+<table>
+  <tr>
+    <td>App starts with songs list</td>
+     <td>And on the second tab albums list</td>
+  </tr>
+  <tr>
+    <td><img src="screenshots/songs.jpg" width=400></td>
+    <td><img src="screenshots/album.jpg" width=400></td>
+  </tr>
+ </table>
 
-## After clicking on a Album it will display list of songs in this album:
- <img align="left" width="400" src="screenshots/album_details.jpg">
+<table>
+ <tr>
+  <td>After clicking on a Album it will display list of songs in this album</td>
+ </tr>
+ <tr>
+  <td><img align="left" width="400" src="screenshots/album_details.jpg"></td>
+ </tr>
+</table>
