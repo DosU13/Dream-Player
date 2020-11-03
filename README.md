@@ -14,7 +14,7 @@
 
 ## App starts with songs list | And on the second tab albums list:
 :---------------------------:|:------------------:
-<img align="left" width="400" src="screenshots/songs.jpg"> | <img align="left" width="400" src="screenshots/album.jpg">  
+![](screenshots/songs.jpg)|![](screenshots/album.jpg) 
 <br />
 
 ## After clicking on a Album it will display list of songs in this album:
