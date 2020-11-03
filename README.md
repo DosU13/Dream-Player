@@ -43,7 +43,7 @@
  </tr>
 </table>
  
- ## Screenshots of cpabilities
+ ## Screenshots of misc capabilities
  
 <table>
  <tr>
